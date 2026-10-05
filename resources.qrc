@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/style.qss</file>
+        <file>resources/logo_sidebar.png</file>
+        <file>resources/logo_icone.png</file>
+        <file>resources/fleche_bas.png</file>
+        <file>resources/fleche_haut.png</file>
+    </qresource>
+</RCC>
