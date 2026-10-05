@@ -1,0 +1,95 @@
+/* HackTime - feuille de style de l'application.
+   Chargee au demarrage dans main.cpp (voir ressources.qrc). */
+
+* { font-family: 'Segoe UI', 'Inter', 'Arial'; font-size: 13px; color: #1E293B; }
+QMainWindow, #centralwidget { background: #F3F6FC; }
+
+/* ---- menu de gauche */
+#sidebar { background: #0B2A6B; }
+#sidebar QLabel { color: white; }
+#sidebar #tagline { color: #9FB6E8; font-style: italic; font-size: 14px; }
+#sidebar QPushButton { text-align: left; padding: 11px 16px; border: none; border-radius: 8px;
+    color: #E6EEFF; font-size: 14px; background: transparent; }
+#sidebar QPushButton:hover { background: #163C8C; }
+#sidebar QPushButton:checked { background: #1665E8; color: white; font-weight: 600; }
+
+/* ---- barre du haut */
+#topbar { background: white; }
+#topSearch { background: #EAF1FC; border: 1px solid #D5E1F5; border-radius: 8px; padding: 9px 12px; }
+#bell { font-size: 20px; }
+
+/* ---- cartes (propriete dynamique card / role / kind) */
+QFrame[card="true"] { background: white; border-radius: 12px; border: 1px solid #E8EEF8; }
+QLabel[role="cardTitle"] { font-size: 16px; font-weight: 700; }
+QLabel[role="kpiTitle"] { color: #475569; }
+QLabel[role="kpiValue"] { font-size: 24px; font-weight: 800; }
+QLabel[role="kpiIcon"] { border-radius: 10px; font-size: 22px; }
+QLabel[role="filterLabel"] { font-size: 11px; color: #475569; }
+#headerIcon { background: #1665E8; border-radius: 14px; font-size: 34px; }
+#lblTitle { font-size: 26px; font-weight: 800; }
+#lblSub { color: #4B5D7A; font-size: 14px; }
+#kpiIcon1 { background: #3B82F6; }
+#kpiIcon2 { background: #22A66B; }
+#kpiIcon3 { background: #7C5CE6; }
+#kpiIcon4 { background: #F59E0B; }
+#footer { color: #64748B; }
+#detailHead { background: #F3F7FD; border-radius: 10px; border: 1px solid #E1EAF7; }
+#dIco { font-size: 28px; }
+#dNom { font-weight: 700; }
+#dId { color: #64748B; }
+#aErr { color: #DC2626; font-size: 12px; }
+#dotCours { color: #2E9E5B; }
+#dotPlanifiee { color: #2563EB; }
+#dotTerminee { color: #94A3B8; }
+
+/* ---- boutons */
+QPushButton[kind="primary"] { background: #1665E8; color: white; border: none; border-radius: 8px;
+    padding: 11px 18px; font-weight: 600; font-size: 14px; }
+QPushButton[kind="primary"]:hover { background: #0F52C4; }
+QPushButton[kind="outline"] { background: white; color: #1665E8; border: 1px solid #1665E8;
+    border-radius: 8px; padding: 11px 18px; font-weight: 600; font-size: 14px; }
+QPushButton[kind="outline"]:hover { background: #EEF4FF; }
+/* boutons au-dessus du tableau : conflits, publications, exports */
+QPushButton[kind="tool"] { background: white; color: #1665E8; border: 1px solid #C9D8F2;
+    border-radius: 8px; padding: 7px 12px; font-weight: 600; }
+QPushButton[kind="tool"]:hover { background: #EEF4FF; border-color: #1665E8; }
+QPushButton#act { border: none; background: transparent; font-size: 16px; padding: 4px; }
+QPushButton#act:hover { background: #EEF4FF; border-radius: 6px; }
+QPushButton#page { background: #EEF3FB; border: none; border-radius: 6px; padding: 8px 12px; }
+QPushButton#pageOn { background: #1665E8; color: white; border: none; border-radius: 6px; padding: 8px 14px; }
+
+/* ---- champs et tableau */
+QLineEdit, QComboBox, QDateEdit, QSpinBox { background: white; border: 1px solid #D5DFEE;
+    border-radius: 8px; padding: 7px 10px; }
+QPlainTextEdit { background: white; border: 1px solid #D5DFEE; border-radius: 8px; padding: 4px 6px; }
+QComboBox QAbstractItemView { background: white; selection-background-color: #DCE9FF;
+    selection-color: #1E293B; color: #1E293B; }
+QTableWidget { background: white; border: none; gridline-color: #EEF2F8;
+    selection-background-color: #EAF2FF; selection-color: #1E293B; }
+QTableWidget::item { border-bottom: 1px solid #EEF2F8; padding-left: 6px; }
+QHeaderView::section { background: #F6F8FC; border: none; padding: 10px 6px;
+    font-weight: 700; font-size: 12px; }
+
+/* ---- colonne droite defilante */
+#rightScroll, #rightCol { background: transparent; border: none; }
+#rightScroll QScrollBar:vertical { background: #E6ECF6; width: 10px; margin: 0; border-radius: 5px; }
+#rightScroll QScrollBar::handle:vertical { background: #8FA6CF; border-radius: 5px; min-height: 40px; }
+#rightScroll QScrollBar::handle:vertical:hover { background: #1665E8; }
+#rightScroll QScrollBar::add-line:vertical, #rightScroll QScrollBar::sub-line:vertical { height: 0; }
+#rightScroll QScrollBar::add-page:vertical, #rightScroll QScrollBar::sub-page:vertical { background: transparent; }
+
+/* ---- fenetres secondaires (modifier, messages, calendrier) */
+QDialog { background: white; }
+QDialog QPushButton { background: #1665E8; color: white; border: none; border-radius: 6px;
+    padding: 7px 18px; font-weight: 600; }
+QDialog QPushButton:hover { background: #0F52C4; }
+QCalendarWidget QWidget { background: white; alternate-background-color: #F6F8FC; }
+QCalendarWidget QAbstractItemView { selection-background-color: #1665E8; selection-color: white; }
+QCalendarWidget QToolButton { background: transparent; border: none; padding: 4px 8px; }
+QMenu { background: white; }
+QMenu::item:selected { background: #DCE9FF; }
+
+/* ---- page de connexion (PLoginCompet) */
+#lblLoginCompet, #lblPWDCompet { font-size: 14px; }
+#BForgotCompet { border: none; background: transparent; color: #1665E8; padding: 2px 6px; }
+#BForgotCompet:hover { text-decoration: underline; }
