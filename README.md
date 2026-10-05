@@ -29,7 +29,7 @@ Aucune base de données n'est à installer : SQLite est intégrée à Qt.
 ## 2. Récupérer le projet
 
 ```bash
-git clone https://github.com/Vfiras/2A25-hackathon.git
+git clone https://github.com/hakirimohamed249-cell/2A25-hackathon.git
 cd 2A25-hackathon
 ```
 
