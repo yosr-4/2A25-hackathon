@@ -1,4 +1,4 @@
-QT += widgets
+QT += widgets sql printsupport
 
 CONFIG += c++17 utf8_source
 msvc: QMAKE_CXXFLAGS += /utf-8
@@ -11,7 +11,13 @@ SOURCES += \
     main.cpp \
     exports.cpp \
     hackathon.cpp \
-    publications.cpp
+    publications.cpp \
+    affectation.cpp \
+    connection.cpp \
+    employe.cpp \
+    gestionemployes.cpp \
+    statswidget.cpp \
+    tache.cpp
 
 HEADERS += \
     competition.h \
@@ -20,10 +26,17 @@ HEADERS += \
     exports.h \
     hackathon.h \
     publications.h \
-    xlsx.h
+    xlsx.h \
+    affectation.h \
+    connection.h \
+    employe.h \
+    gestionemployes.h \
+    statswidget.h \
+    tache.h
 
 FORMS += \
-    hackathon.ui
+    hackathon.ui \
+    gestionemployes.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -31,7 +44,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    style.qss
+    style.qss \
+    resources/style.qss \
+    sql/script_oracle.sql
 
 RESOURCES += \
-    ressources.qrc
+    ressources.qrc \
+    resources.qrc

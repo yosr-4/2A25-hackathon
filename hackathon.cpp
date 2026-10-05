@@ -1,4 +1,5 @@
-// HackTime - projet d'intégration. Pour l'instant : module Gestion des compétitions.
+// HackTime - projet d'intégration : modules Gestion des compétitions et Gestion des employés
+// (page PEmp de SWHackTime, classe GestionEmployes dans gestionemployes.h).
 // Les widgets sont dans hackathon.ui (Qt Designer) et les couleurs dans style.qss
 // (chargé dans main.cpp) ; ce fichier contient la logique.
 // Les données sont sauvegardées dans competitions.json (à côté de l'exécutable).
@@ -10,6 +11,7 @@
 #include "conflits.h"
 #include "exports.h"
 #include "publications.h"
+#include "gestionemployes.h"
 
 #include <QCoreApplication>
 #include <QGuiApplication>
@@ -206,7 +208,7 @@ private:
 hackathon::hackathon(QWidget *parent) : QMainWindow(parent), ui(new Ui::hackathon) {
     ui->setupUi(this);  // crée tous les widgets dessinés dans hackathon.ui
 
-    // SWHackTime : une page par module. Page 0 = module Compétitions (PComp).
+    // SWHackTime : une page par module. Page 0 = Compétitions (PComp), page 1 = Employés (PEmp).
     ui->SWHackTime->setCurrentIndex(0);
     // SWCompet (dans PComp) : page 0 = login (PLoginCompet), page 1 = compétitions (CRUDCompet).
     ui->SWCompet->setCurrentIndex(0);
@@ -267,7 +269,21 @@ bool hackathon::eventFilter(QObject *obj, QEvent *ev) {
 
 // ---------------------------------------------------------------- Mise en place
 void hackathon::setupNavigation() {
-    // Seul le module « Compétitions » existe ; les autres boutons affichent un message.
+    // Module « Employés » : page PEmp de SWHackTime (gestionemployes.h).
+    connect(ui->btnEmployes, &QPushButton::clicked, this, [this]() {
+        ui->SWHackTime->setCurrentWidget(ui->PEmp);
+    });
+    // Barre latérale de la page Employés : retour aux compétitions ou message.
+    connect(ui->PEmp, &GestionEmployes::navigationDemandee, this, [this](const QString &module) {
+        if (module == "Compétitions") {
+            ui->SWHackTime->setCurrentWidget(ui->PComp);
+            ui->btnCompetitions->setChecked(true);
+        } else {
+            notImplemented(module);
+        }
+    });
+
+    // Modules pas encore intégrés : les autres boutons affichent un message.
     const QList<QPair<QPushButton *, QString>> others = {
         {ui->btnDashboard, "Tableau de bord"}, {ui->btnEquipes, "Équipes"},
         {ui->btnParticipants, "Participants"}, {ui->btnChallenges, "Challenges"},

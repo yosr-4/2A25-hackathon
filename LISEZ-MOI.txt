@@ -1,0 +1,48 @@
+HackTime - Module « Gestion des Employés » (Qt / C++)
+=====================================================
+
+Ouvrir le projet
+----------------
+1. Décompresser l'archive.
+2. Dans Qt Creator : Fichier > Ouvrir un fichier ou projet > hackathon.pro
+   (projet commun : modules Compétitions et Employés)
+3. Choisir le kit proposé (Qt 6), puis Exécuter (Ctrl+R).
+
+Aucun réglage de base de données n'est nécessaire : le programme crée un
+fichier SQLite « hacktime_employes.db » à côté de l'exécutable et le remplit
+avec des données de démonstration au premier lancement.
+
+Fichiers
+--------
+employe.h / .cpp        Entité Employé : CRUD, recherche, tri, statistiques
+tache.h / .cpp          Tâches de l'événement (rattachées à une compétition)
+affectation.h / .cpp    Métiers innovants : suivi de charge, alertes,
+                        algorithme d'affectation, rééquilibrage
+statswidget.h / .cpp    Graphique des statistiques (dessiné avec QPainter)
+gestionemployes.ui      Interface du module, modifiable avec Qt Designer
+                        (compartiment « Formulaires » de Qt Creator)
+gestionemployes.h / .cpp  Page « Employés » (page PEmp de hackathon.ui) : menus, signaux,
+                        remplissage des tableaux, exports
+connection.h / .cpp     Connexion à la base (SQLite par défaut)
+resources/style.qss     Couleurs et style de l'interface
+resources/*.png         Logo HackTime et icônes
+sql/script_oracle.sql   Création des tables si vous utilisez Oracle
+
+Utiliser Oracle à la place de SQLite
+------------------------------------
+1. Exécuter sql/script_oracle.sql dans SQL Developer.
+2. Dans connection.cpp, remplacer les deux lignes SQLite par le bloc Oracle
+   donné en commentaire (nom de la source ODBC, utilisateur, mot de passe).
+3. Lancer le programme, puis menu utilisateur (en haut à droite) >
+   « Réinitialiser les données de démonstration » pour remplir les tables.
+
+À savoir
+--------
+- « Exporter en Excel » produit un fichier .csv qu'Excel ouvre directement
+  (colonnes et accents corrects).
+- Les champs « Compétences » et « Heures disponibles » ne figurent pas dans
+  les attributs du cahier des spécifications ; ils sont nécessaires au suivi
+  de charge et à l'affectation intelligente.
+- Dans la barre latérale, « Compétitions » ramène au module Compétitions ;
+  les autres entrées (Équipes…) sont
+  affichées pour l'apparence en attendant leur intégration.

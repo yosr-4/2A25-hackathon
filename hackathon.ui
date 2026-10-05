@@ -406,6 +406,22 @@
                  </widget>
                 </item>
                 <item>
+                 <widget class="QPushButton" name="btnEmployes">
+                  <property name="cursor">
+                   <cursorShape>PointingHandCursor</cursorShape>
+                  </property>
+                  <property name="text">
+                   <string>💼   Employés</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="autoExclusive">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QPushButton" name="btnChallenges">
                   <property name="cursor">
                    <cursorShape>PointingHandCursor</cursorShape>
@@ -2237,6 +2253,7 @@ les solutions de demain</string>
         </item>
        </layout>
       </widget>
+      <widget class="GestionEmployes" name="PEmp"/>
      </widget>
     </item>
    </layout>
@@ -2247,6 +2264,12 @@ les solutions de demain</string>
    <class>Donut</class>
    <extends>QWidget</extends>
    <header>donut.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GestionEmployes</class>
+   <extends>QWidget</extends>
+   <header>gestionemployes.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
