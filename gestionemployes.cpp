@@ -55,6 +55,7 @@ QToolButton *boutonIcone(const QString &icone, const QString &infobulle)
     b->setText(icone);
     b->setToolTip(infobulle);
     b->setCursor(Qt::PointingHandCursor);
+    b->setMinimumWidth(32);   // l'icône reste lisible même dans une colonne sans titre
     return b;
 }
 
@@ -89,6 +90,10 @@ QLabel *pastille(const QString &libelle, const QString &type)
     QLabel *label = new QLabel(libelle);
     label->setAlignment(Qt::AlignCenter);
     label->setStyleSheet(stylePastille(type));
+    // Applique le style tout de suite : la largeur de la colonne du tableau
+    // est calculée avant l'affichage et doit inclure la marge intérieure.
+    label->ensurePolished();
+    label->setMinimumWidth(label->sizeHint().width());
     return label;
 }
 
