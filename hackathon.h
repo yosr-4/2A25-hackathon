@@ -42,6 +42,13 @@ private:
     void showDetails();
     void notImplemented(const QString &module);
 
+    // ----- fonctionnalités avancées (boutons au-dessus du tableau)
+    bool confirmerMalgreConflits(const Comp &c);   // détection des conflits de planning
+    void showConflicts();
+    void exportList(bool pdf);                     // export PDF / Excel
+    void openPublications();                       // brochure et publicité
+    QString filtresTexte() const;
+
     // ----- affichage
     void onSelect();
     void onFilter();

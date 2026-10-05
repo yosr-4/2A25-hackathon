@@ -9,12 +9,18 @@ msvc: QMAKE_CXXFLAGS += /utf-8
 
 SOURCES += \
     main.cpp \
-    hackathon.cpp
+    exports.cpp \
+    hackathon.cpp \
+    publications.cpp
 
 HEADERS += \
     competition.h \
+    conflits.h \
     donut.h \
-    hackathon.h
+    exports.h \
+    hackathon.h \
+    publications.h \
+    xlsx.h
 
 FORMS += \
     hackathon.ui

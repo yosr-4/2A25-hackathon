@@ -49,6 +49,10 @@ QPushButton[kind="primary"]:hover { background: #0F52C4; }
 QPushButton[kind="outline"] { background: white; color: #1665E8; border: 1px solid #1665E8;
     border-radius: 8px; padding: 11px 18px; font-weight: 600; font-size: 14px; }
 QPushButton[kind="outline"]:hover { background: #EEF4FF; }
+/* boutons au-dessus du tableau : conflits, publications, exports */
+QPushButton[kind="tool"] { background: white; color: #1665E8; border: 1px solid #C9D8F2;
+    border-radius: 8px; padding: 7px 12px; font-weight: 600; }
+QPushButton[kind="tool"]:hover { background: #EEF4FF; border-color: #1665E8; }
 QPushButton#act { border: none; background: transparent; font-size: 16px; padding: 4px; }
 QPushButton#act:hover { background: #EEF4FF; border-radius: 6px; }
 QPushButton#page { background: #EEF3FB; border: none; border-radius: 6px; padding: 8px 12px; }
@@ -57,6 +61,7 @@ QPushButton#pageOn { background: #1665E8; color: white; border: none; border-rad
 /* ---- champs et tableau */
 QLineEdit, QComboBox, QDateEdit, QSpinBox { background: white; border: 1px solid #D5DFEE;
     border-radius: 8px; padding: 7px 10px; }
+QPlainTextEdit { background: white; border: 1px solid #D5DFEE; border-radius: 8px; padding: 4px 6px; }
 QComboBox QAbstractItemView { background: white; selection-background-color: #DCE9FF;
     selection-color: #1E293B; color: #1E293B; }
 QTableWidget { background: white; border: none; gridline-color: #EEF2F8;

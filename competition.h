@@ -7,6 +7,8 @@
 
 struct Comp {
     QString id, nom, theme, debut, fin, mode, statut;
+    QString salle, jury;     // utilisés par la détection des conflits de planning
+    QString description;     // texte libre, repris dans la brochure et la publicité
     int max = 5;
 };
 
@@ -18,6 +20,14 @@ static const QStringList THEMES = {"Environnement", "Santé", "Éducation", "Vil
                                    "Finance", "Autre"};
 static const QStringList MODES = {"Équipes", "Individuel"};
 static const QStringList STATUTS = {"Planifiée", "En cours", "Terminée"};
+
+// Salles et jurys : deux compétitions dont les dates se chevauchent ne peuvent pas
+// partager la même salle ni le même jury (voir conflits.h).
+static const QString NON_DEFINI = "À définir";   // pas encore choisi -> jamais en conflit
+static const QString EN_LIGNE = "En ligne";      // pas de salle physique -> jamais en conflit
+static const QStringList SALLES = {NON_DEFINI, "Amphi A", "Amphi B", "Salle 101", "Salle 102",
+                                   "Labo Info 1", "Labo Info 2", EN_LIGNE};
+static const QStringList JURYS = {NON_DEFINI, "Jury A", "Jury B", "Jury C", "Jury D"};
 
 inline QString themeIcon(const QString &t) {
     if (t == "Environnement") return "🍃";

@@ -2,18 +2,25 @@
 // Les widgets sont dans hackathon.ui (Qt Designer) et les couleurs dans style.qss
 // (chargé dans main.cpp) ; ce fichier contient la logique.
 // Les données sont sauvegardées dans competitions.json (à côté de l'exécutable).
+// Fonctionnalités avancées : conflits de planning (conflits.h), export PDF / Excel
+// (exports.cpp, xlsx.h), brochure et publicité (publications.cpp).
 
 #include "hackathon.h"
 #include "ui_hackathon.h"
+#include "conflits.h"
+#include "exports.h"
+#include "publications.h"
 
 #include <QCoreApplication>
 #include <QGuiApplication>
 #include <QComboBox>
+#include <QDate>
 #include <QDateEdit>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QEvent>
 #include <QFile>
+#include <QFileDialog>
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QHeaderView>
@@ -25,11 +32,13 @@
 #include <QLineEdit>
 #include <QLocale>
 #include <QMessageBox>
+#include <QPlainTextEdit>
 #include <QPushButton>
 #include <QScreen>
 #include <QSet>
 #include <QSignalBlocker>
 #include <QSpinBox>
+#include <QStandardPaths>
 #include <QVBoxLayout>
 #include <algorithm>
 
@@ -40,22 +49,33 @@ static QString dataPath() {
 
 static QVector<Comp> defaultData() {
     auto mk = [](const char *id, const char *nom, const char *th, const char *d, const char *f,
-                 const char *mode, int max, const char *st) {
+                 const char *mode, int max, const char *st, const char *salle, const char *jury,
+                 const char *desc) {
         Comp c;
         c.id = id; c.nom = QString::fromUtf8(nom); c.theme = QString::fromUtf8(th);
         c.debut = d; c.fin = f; c.mode = QString::fromUtf8(mode); c.max = max;
         c.statut = QString::fromUtf8(st);
+        c.salle = QString::fromUtf8(salle); c.jury = QString::fromUtf8(jury);
+        c.description = QString::fromUtf8(desc);
         return c;
     };
     return {
-        mk("C-001", "Hack for a Better Future", "Environnement", "12/05/2025", "14/05/2025", "Équipes", 5, "Planifiée"),
-        mk("C-002", "HealthTech Innovation", "Santé", "20/05/2025", "22/05/2025", "Équipes", 4, "En cours"),
-        mk("C-003", "EduTech Solutions", "Éducation", "28/04/2025", "30/04/2025", "Équipes", 6, "Terminée"),
-        mk("C-004", "Smart City Challenge", "Ville intelligente", "10/06/2025", "12/06/2025", "Équipes", 5, "Planifiée"),
-        mk("C-005", "AgriTech for Tomorrow", "Agriculture", "18/06/2025", "20/06/2025", "Individuel", 3, "En cours"),
-        mk("C-006", "AI for Good", "Intelligence artificielle", "25/03/2025", "27/03/2025", "Équipes", 4, "Terminée"),
-        mk("C-007", "Web & Mobile Dev", "Développement", "15/07/2025", "17/07/2025", "Équipes", 5, "Planifiée"),
-        mk("C-008", "FinTech Hack", "Finance", "22/07/2025", "24/07/2025", "Équipes", 6, "Planifiée"),
+        mk("C-001", "Hack for a Better Future", "Environnement", "12/05/2025", "14/05/2025", "Équipes", 5, "Planifiée",
+           "Amphi A", "Jury A", "Trois jours pour imaginer des solutions numériques au service de la planète : énergie, déchets, biodiversité."),
+        mk("C-002", "HealthTech Innovation", "Santé", "20/05/2025", "22/05/2025", "Équipes", 4, "En cours",
+           "Amphi B", "Jury B", "Concevez des outils qui améliorent le suivi des patients et le quotidien des soignants."),
+        mk("C-003", "EduTech Solutions", "Éducation", "28/04/2025", "30/04/2025", "Équipes", 6, "Terminée",
+           "Salle 101", "Jury C", "Réinventez l'apprentissage avec des applications éducatives accessibles à tous."),
+        mk("C-004", "Smart City Challenge", "Ville intelligente", "10/06/2025", "12/06/2025", "Équipes", 5, "Planifiée",
+           "Amphi A", "Jury A", "Mobilité, énergie, services publics : construisez la ville connectée de demain."),
+        mk("C-005", "AgriTech for Tomorrow", "Agriculture", "18/06/2025", "20/06/2025", "Individuel", 3, "En cours",
+           "Salle 102", "Jury B", "Mettez le numérique au service des agriculteurs : irrigation, suivi des cultures, circuits courts."),
+        mk("C-006", "AI for Good", "Intelligence artificielle", "25/03/2025", "27/03/2025", "Équipes", 4, "Terminée",
+           "Labo Info 1", "Jury D", "Utilisez l'intelligence artificielle pour répondre à un problème de société."),
+        mk("C-007", "Web & Mobile Dev", "Développement", "15/07/2025", "17/07/2025", "Équipes", 5, "Planifiée",
+           "Amphi B", "Jury C", "Développez en équipe une application web ou mobile complète en 48 heures."),
+        mk("C-008", "FinTech Hack", "Finance", "22/07/2025", "24/07/2025", "Équipes", 6, "Planifiée",
+           "En ligne", "Jury A", "Paiement, épargne, inclusion financière : prototypez les services financiers de demain."),
     };
 }
 
@@ -73,6 +93,12 @@ static QVector<Comp> loadData() {
                 c.theme = o["theme"].toString(); c.debut = o["debut"].toString();
                 c.fin = o["fin"].toString(); c.mode = o["mode"].toString();
                 c.max = o["max"].toInt(); c.statut = o["statut"].toString();
+                // Champs ajoutés après coup : absents des anciens fichiers -> « À définir ».
+                c.salle = o.value("salle").toString(NON_DEFINI);
+                c.jury = o.value("jury").toString(NON_DEFINI);
+                c.description = o.value("description").toString();
+                if (c.salle.isEmpty()) c.salle = NON_DEFINI;
+                if (c.jury.isEmpty()) c.jury = NON_DEFINI;
                 out.append(c);
             }
             return out;
@@ -87,6 +113,7 @@ static void saveData(const QVector<Comp> &data) {
         QJsonObject o;
         o["id"] = c.id; o["nom"] = c.nom; o["theme"] = c.theme; o["debut"] = c.debut;
         o["fin"] = c.fin; o["mode"] = c.mode; o["max"] = c.max; o["statut"] = c.statut;
+        o["salle"] = c.salle; o["jury"] = c.jury; o["description"] = c.description;
         arr.append(o);
     }
     QFile f(dataPath());
@@ -111,6 +138,9 @@ public:
         mode = new QComboBox; mode->addItems(MODES); mode->setCurrentText(comp.mode);
         max = new QSpinBox; max->setRange(1, 999); max->setValue(comp.max);
         statut = new QComboBox; statut->addItems(STATUTS); statut->setCurrentText(comp.statut);
+        salle = new QComboBox; salle->addItems(SALLES); salle->setCurrentText(comp.salle);
+        jury = new QComboBox; jury->addItems(JURYS); jury->setCurrentText(comp.jury);
+        description = new QPlainTextEdit(comp.description); description->setFixedHeight(70);
 
         QFormLayout *form = new QFormLayout;
         form->addRow("ID", new QLabel(compId));
@@ -121,6 +151,9 @@ public:
         form->addRow("Mode", mode);
         form->addRow("Équipes max", max);
         form->addRow("Statut", statut);
+        form->addRow("Salle", salle);
+        form->addRow("Jury", jury);
+        form->addRow("Description", description);
 
         QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
         bb->button(QDialogButtonBox::Ok)->setText("Enregistrer");
@@ -154,13 +187,17 @@ public:
         c.mode = mode->currentText();
         c.max = max->value();
         c.statut = statut->currentText();
+        c.salle = salle->currentText();
+        c.jury = jury->currentText();
+        c.description = description->toPlainText().trimmed();
         return c;
     }
 
 private:
     QString compId;
     QLineEdit *nom;
-    QComboBox *theme, *mode, *statut;
+    QComboBox *theme, *mode, *statut, *salle, *jury;
+    QPlainTextEdit *description;
     QDateEdit *debut, *fin;
     QSpinBox *max;
 };
@@ -198,6 +235,12 @@ hackathon::hackathon(QWidget *parent) : QMainWindow(parent), ui(new Ui::hackatho
     connect(ui->btnTeams, &QPushButton::clicked, this, [this]() { notImplemented("Équipes"); });
     connect(ui->btnViewJury, &QPushButton::clicked, this, [this]() { notImplemented("Jury"); });
     connect(ui->btnReports, &QPushButton::clicked, this, [this]() { notImplemented("Rapports"); });
+
+    // Boutons au-dessus du tableau : conflits, publications, exports.
+    connect(ui->btnConflits, &QPushButton::clicked, this, [this]() { showConflicts(); });
+    connect(ui->btnPublications, &QPushButton::clicked, this, [this]() { openPublications(); });
+    connect(ui->btnExportPdf, &QPushButton::clicked, this, [this]() { exportList(true); });
+    connect(ui->btnExportExcel, &QPushButton::clicked, this, [this]() { exportList(false); });
 
     refresh();
 }
@@ -264,9 +307,11 @@ void hackathon::setupAddForm() {
     ui->aTheme->addItems(THEMES);
     ui->aMode->addItems(MODES);
     ui->aStatut->addItems(STATUTS);
+    ui->aSalle->addItems(SALLES);
+    ui->aJury->addItems(JURYS);
 
-    const QList<QWidget *> fields = {ui->aTheme, ui->aDebut, ui->aFin,
-                                     ui->aMode, ui->aMax, ui->aStatut};
+    const QList<QWidget *> fields = {ui->aTheme, ui->aDebut, ui->aFin, ui->aMode,
+                                     ui->aMax, ui->aStatut, ui->aSalle, ui->aJury};
     for (QWidget *f : fields) {
         f->setFocusPolicy(Qt::StrongFocus);  // la molette ne donne plus le focus
         f->installEventFilter(this);         // ... et ne modifie plus la valeur
@@ -310,6 +355,9 @@ void hackathon::resetAddForm() {
     ui->aMode->setCurrentIndex(0);
     ui->aMax->setValue(5);
     ui->aStatut->setCurrentIndex(0);
+    ui->aSalle->setCurrentIndex(0);
+    ui->aJury->setCurrentIndex(0);
+    ui->aDesc->clear();
     ui->aErr->hide();
 }
 
@@ -337,6 +385,15 @@ void hackathon::submitAddForm() {
     c.mode = ui->aMode->currentText();
     c.max = ui->aMax->value();
     c.statut = ui->aStatut->currentText();
+    c.salle = ui->aSalle->currentText();
+    c.jury = ui->aJury->currentText();
+    c.description = ui->aDesc->toPlainText().trimmed();
+
+    // Détection automatique des conflits de planning avant de valider.
+    if (!confirmerMalgreConflits(c)) {
+        showAddError("Conflit de planning : changez la salle, le jury ou les dates.");
+        return;
+    }
 
     data.append(c);
     saveData(data);
@@ -352,10 +409,13 @@ void hackathon::editCompetition(const QString &id) {
     int i = indexOf(id);
     if (i < 0) return;
     CompetitionDialog dlg(this, data[i]);
-    if (dlg.exec() == QDialog::Accepted) {
-        data[i] = dlg.result();
+    while (dlg.exec() == QDialog::Accepted) {
+        const Comp c = dlg.result();
+        if (!confirmerMalgreConflits(c)) continue;   // « Corriger » : la fenêtre se rouvre
+        data[i] = c;
         saveData(data);
         refresh();
+        break;
     }
 }
 
@@ -387,9 +447,109 @@ void hackathon::showDetails() {
     int i = indexOf(selectedId);
     if (i < 0) return;
     const Comp &c = data[i];
-    QMessageBox::information(this, c.nom,
-        QString("ID : %1\nThème : %2\nDébut : %3\nFin : %4\nMode : %5\nÉquipes max : %6\nStatut : %7")
-            .arg(c.id, c.theme, c.debut, c.fin, c.mode).arg(c.max).arg(c.statut));
+    QStringList lignes;
+    lignes << QString("ID : %1").arg(c.id)
+           << QString("Thème : %1").arg(c.theme)
+           << QString("Début : %1").arg(c.debut)
+           << QString("Fin : %1").arg(c.fin)
+           << QString("Mode : %1").arg(c.mode)
+           << QString("Équipes max : %1").arg(c.max)
+           << QString("Salle : %1").arg(c.salle)
+           << QString("Jury : %1").arg(c.jury)
+           << QString("Statut : %1").arg(c.statut);
+    if (!c.description.isEmpty())
+        lignes << QString() << c.description;
+    const QStringList pb = conflitsDe(c, data);
+    if (!pb.isEmpty())
+        lignes << QString() << QString("⚠️ Conflit de planning :") << pb;
+    QMessageBox::information(this, c.nom, lignes.join("\n"));
+}
+
+// ---------------------------------------------------------------- Conflits de planning
+// Appelée avant d'enregistrer un ajout ou une modification. S'il y a un conflit
+// (même salle ou même jury sur des dates qui se chevauchent), on l'affiche et
+// l'utilisateur choisit : corriger (retourne false) ou enregistrer quand même (true).
+bool hackathon::confirmerMalgreConflits(const Comp &c) {
+    const QStringList pb = conflitsDe(c, data);
+    if (pb.isEmpty()) return true;
+
+    QMessageBox box(this);
+    box.setIcon(QMessageBox::Warning);
+    box.setWindowTitle("Conflit de planning détecté");
+    box.setText(QString("« %1 » (du %2 au %3) entre en conflit avec le planning :")
+                    .arg(c.nom, c.debut, c.fin));
+    box.setInformativeText(QString("• %1").arg(pb.join("\n• ")));
+    QPushButton *corriger = box.addButton("Corriger", QMessageBox::RejectRole);
+    box.addButton("Enregistrer quand même", QMessageBox::AcceptRole);
+    box.setDefaultButton(corriger);
+    box.exec();
+    return box.clickedButton() != corriger;
+}
+
+// Bouton « Conflits » : contrôle tout le planning d'un coup.
+void hackathon::showConflicts() {
+    const QStringList pb = tousLesConflits(data);
+    if (pb.isEmpty()) {
+        QMessageBox::information(this, "Conflits de planning",
+            QString("Aucun conflit sur les %1 compétitions : aucune salle et aucun jury "
+                    "n'est réservé deux fois sur les mêmes dates.").arg(data.size()));
+        return;
+    }
+    QMessageBox box(this);
+    box.setIcon(QMessageBox::Warning);
+    box.setWindowTitle("Conflits de planning");
+    box.setText(QString("%1 conflit(s) de planning détecté(s) :").arg(pb.size()));
+    box.setInformativeText(QString("• %1").arg(pb.join("\n• ")));
+    box.exec();
+}
+
+// ---------------------------------------------------------------- Exports et publications
+// Texte des filtres actifs, rappelé sous le titre du PDF.
+QString hackathon::filtresTexte() const {
+    QStringList f;
+    const QString q = ui->search->text().trimmed();
+    if (!q.isEmpty()) f << QString("Recherche : %1").arg(q);
+    if (ui->fStatut->currentIndex() > 0) f << QString("Statut : %1").arg(ui->fStatut->currentText());
+    if (ui->fTheme->currentIndex() > 0) f << QString("Thème : %1").arg(ui->fTheme->currentText());
+    if (ui->fDate->currentIndex() > 0) f << QString("Année : %1").arg(ui->fDate->currentText());
+    return f.join("  ·  ");
+}
+
+// Exporte la liste affichée (toutes les pages, filtres compris) en PDF ou en Excel.
+void hackathon::exportList(bool pdf) {
+    if (filtered.isEmpty()) {
+        QMessageBox::information(this, "Export", "Aucune compétition à exporter avec les filtres actuels.");
+        return;
+    }
+    const QString ext = pdf ? ".pdf" : ".xlsx";
+    const QString defaut = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
+                           + "/competitions_" + QDate::currentDate().toString("yyyy-MM-dd") + ext;
+    QString chemin = QFileDialog::getSaveFileName(
+        this, pdf ? "Exporter en PDF" : "Exporter en Excel", defaut,
+        pdf ? "Document PDF (*.pdf)" : "Classeur Excel (*.xlsx)");
+    if (chemin.isEmpty()) return;   // l'utilisateur a annulé
+    if (!chemin.endsWith(ext, Qt::CaseInsensitive)) chemin += ext;
+
+    const bool ok = pdf ? exporterPdf(filtered, chemin, filtresTexte())
+                        : exporterExcel(filtered, chemin);
+    if (!ok) {
+        QMessageBox::warning(this, "Export",
+            "Impossible d'écrire le fichier (est-il déjà ouvert dans un autre programme ?).");
+        return;
+    }
+    proposerOuverture(this, chemin);
+}
+
+// Brochure et publicité de la compétition sélectionnée.
+void hackathon::openPublications() {
+    const int i = indexOf(selectedId);
+    if (i < 0) {
+        QMessageBox::information(this, "Publications",
+                                 "Sélectionnez d'abord une compétition dans le tableau.");
+        return;
+    }
+    PublicationsDialog dlg(this, data[i]);
+    dlg.exec();
 }
 
 // ---------------------------------------------------------------- Filtres
@@ -488,10 +648,16 @@ void hackathon::refresh(bool rebuildYears) {
                 if (center) it->setTextAlignment(Qt::AlignCenter);
                 return it;
             };
+            // Une compétition en conflit de planning est signalée : ID en rouge,
+            // ⚠️ devant le nom, et le détail du conflit en info-bulle.
+            const QStringList pb = conflitsDe(c, data);
             QTableWidgetItem *idItem = mk(c.id);
-            idItem->setForeground(QColor("#1665E8"));
+            idItem->setForeground(QColor(pb.isEmpty() ? "#1665E8" : "#DC2626"));
             table->setItem(r, 0, idItem);
-            table->setItem(r, 1, mk(c.nom));
+            QTableWidgetItem *nomItem = mk(pb.isEmpty() ? c.nom : QString("⚠️ %1").arg(c.nom));
+            if (!pb.isEmpty())
+                nomItem->setToolTip(QString("Conflit de planning :\n• %1").arg(pb.join("\n• ")));
+            table->setItem(r, 1, nomItem);
             table->setItem(r, 2, mk(themeIcon(c.theme) + "  " + c.theme));
             table->setItem(r, 3, mk(c.debut));
             table->setItem(r, 4, mk(c.fin));
@@ -509,6 +675,13 @@ void hackathon::refresh(bool rebuildYears) {
     buildPager(pages);
     updateKpis();
     updateDetails();
+
+    // Le bouton « Conflits » affiche en permanence le nombre de conflits du planning.
+    const int nbConflits = int(tousLesConflits(data).size());
+    ui->btnConflits->setText(nbConflits > 0 ? QString("⚠️  Conflits : %1").arg(nbConflits)
+                                            : QString("✅  Conflits : 0"));
+    ui->btnConflits->setStyleSheet(nbConflits > 0 ? QString("color:#DC2626; border:1px solid #DC2626;")
+                                                  : QString());
     ui->aId->setText(nextId());  // l'ID proposé suit les ajouts et les suppressions
 }
 
@@ -565,7 +738,8 @@ void hackathon::updateDetails() {
     if (i < 0) {
         ui->dNom->setText("Aucune sélection"); ui->dId->clear();
         ui->dBadge->clear(); ui->dBadge->setStyleSheet("");
-        for (QLabel *v : {ui->dTheme, ui->dDebut, ui->dFin, ui->dMode, ui->dMax}) v->setText("-");
+        for (QLabel *v : {ui->dTheme, ui->dDebut, ui->dFin, ui->dMode, ui->dMax, ui->dSalle, ui->dJury})
+            v->setText("-");
         return;
     }
     const Comp &c = data[i];
@@ -581,4 +755,6 @@ void hackathon::updateDetails() {
     ui->dFin->setText(fr.toString(QDate::fromString(c.fin, DATE_FMT), "d MMMM yyyy"));
     ui->dMode->setText(c.mode);
     ui->dMax->setText(QString::number(c.max));
+    ui->dSalle->setText(c.salle);
+    ui->dJury->setText(c.jury);
 }

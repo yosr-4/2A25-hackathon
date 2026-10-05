@@ -21,6 +21,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSpacerItem>
@@ -127,7 +128,13 @@ public:
     QSpacerItem *kpiSpacer4;
     QFrame *cardList;
     QVBoxLayout *listLayout;
+    QHBoxLayout *listHeadLayout;
     QLabel *lblList;
+    QSpacerItem *listHeadSpacer;
+    QPushButton *btnConflits;
+    QPushButton *btnPublications;
+    QPushButton *btnExportPdf;
+    QPushButton *btnExportExcel;
     QHBoxLayout *filterLayout;
     QLineEdit *search;
     QVBoxLayout *fStatutLayout;
@@ -172,6 +179,10 @@ public:
     QLabel *dMode;
     QLabel *dMaxLabel;
     QLabel *dMax;
+    QLabel *dSalleLabel;
+    QLabel *dSalle;
+    QLabel *dJuryLabel;
+    QLabel *dJury;
     QPushButton *btnDetails;
     QFrame *cardAdd;
     QVBoxLayout *addLayout;
@@ -193,6 +204,12 @@ public:
     QSpinBox *aMax;
     QLabel *aStatutLabel;
     QComboBox *aStatut;
+    QLabel *aSalleLabel;
+    QComboBox *aSalle;
+    QLabel *aJuryLabel;
+    QComboBox *aJury;
+    QLabel *aDescLabel;
+    QPlainTextEdit *aDesc;
     QLabel *aErr;
     QHBoxLayout *addButtonsLayout;
     QPushButton *btnSave;
@@ -715,11 +732,49 @@ public:
         listLayout->setSpacing(12);
         listLayout->setObjectName("listLayout");
         listLayout->setContentsMargins(16, 16, 16, 12);
+        listHeadLayout = new QHBoxLayout();
+        listHeadLayout->setSpacing(8);
+        listHeadLayout->setObjectName("listHeadLayout");
         lblList = new QLabel(cardList);
         lblList->setObjectName("lblList");
         lblList->setProperty("role", QVariant(QString::fromUtf8("cardTitle")));
 
-        listLayout->addWidget(lblList);
+        listHeadLayout->addWidget(lblList);
+
+        listHeadSpacer = new QSpacerItem(20, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+
+        listHeadLayout->addItem(listHeadSpacer);
+
+        btnConflits = new QPushButton(cardList);
+        btnConflits->setObjectName("btnConflits");
+        btnConflits->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
+        btnConflits->setProperty("kind", QVariant(QString::fromUtf8("tool")));
+
+        listHeadLayout->addWidget(btnConflits);
+
+        btnPublications = new QPushButton(cardList);
+        btnPublications->setObjectName("btnPublications");
+        btnPublications->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
+        btnPublications->setProperty("kind", QVariant(QString::fromUtf8("tool")));
+
+        listHeadLayout->addWidget(btnPublications);
+
+        btnExportPdf = new QPushButton(cardList);
+        btnExportPdf->setObjectName("btnExportPdf");
+        btnExportPdf->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
+        btnExportPdf->setProperty("kind", QVariant(QString::fromUtf8("tool")));
+
+        listHeadLayout->addWidget(btnExportPdf);
+
+        btnExportExcel = new QPushButton(cardList);
+        btnExportExcel->setObjectName("btnExportExcel");
+        btnExportExcel->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
+        btnExportExcel->setProperty("kind", QVariant(QString::fromUtf8("tool")));
+
+        listHeadLayout->addWidget(btnExportExcel);
+
+
+        listLayout->addLayout(listHeadLayout);
 
         filterLayout = new QHBoxLayout();
         filterLayout->setSpacing(12);
@@ -859,7 +914,7 @@ public:
         rightScroll->setWidgetResizable(true);
         rightCol = new QWidget();
         rightCol->setObjectName("rightCol");
-        rightCol->setGeometry(QRect(0, 0, 330, 1260));
+        rightCol->setGeometry(QRect(0, 0, 330, 1480));
         rightCol->setMinimumSize(QSize(330, 0));
         rightCol->setMaximumSize(QSize(330, 16777215));
         rightLayout = new QVBoxLayout(rightCol);
@@ -976,6 +1031,26 @@ public:
         dMax->setObjectName("dMax");
 
         detailsGrid->addWidget(dMax, 4, 1, 1, 1);
+
+        dSalleLabel = new QLabel(cardDetails);
+        dSalleLabel->setObjectName("dSalleLabel");
+
+        detailsGrid->addWidget(dSalleLabel, 5, 0, 1, 1);
+
+        dSalle = new QLabel(cardDetails);
+        dSalle->setObjectName("dSalle");
+
+        detailsGrid->addWidget(dSalle, 5, 1, 1, 1);
+
+        dJuryLabel = new QLabel(cardDetails);
+        dJuryLabel->setObjectName("dJuryLabel");
+
+        detailsGrid->addWidget(dJuryLabel, 6, 0, 1, 1);
+
+        dJury = new QLabel(cardDetails);
+        dJury->setObjectName("dJury");
+
+        detailsGrid->addWidget(dJury, 6, 1, 1, 1);
 
 
         detailsLayout->addLayout(detailsGrid);
@@ -1100,6 +1175,43 @@ public:
         aStatut->setMinimumContentsLength(8);
 
         addFormLayout->setWidget(7, QFormLayout::FieldRole, aStatut);
+
+        aSalleLabel = new QLabel(cardAdd);
+        aSalleLabel->setObjectName("aSalleLabel");
+
+        addFormLayout->setWidget(8, QFormLayout::LabelRole, aSalleLabel);
+
+        aSalle = new QComboBox(cardAdd);
+        aSalle->setObjectName("aSalle");
+        aSalle->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
+        aSalle->setMinimumContentsLength(8);
+
+        addFormLayout->setWidget(8, QFormLayout::FieldRole, aSalle);
+
+        aJuryLabel = new QLabel(cardAdd);
+        aJuryLabel->setObjectName("aJuryLabel");
+
+        addFormLayout->setWidget(9, QFormLayout::LabelRole, aJuryLabel);
+
+        aJury = new QComboBox(cardAdd);
+        aJury->setObjectName("aJury");
+        aJury->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
+        aJury->setMinimumContentsLength(8);
+
+        addFormLayout->setWidget(9, QFormLayout::FieldRole, aJury);
+
+        aDescLabel = new QLabel(cardAdd);
+        aDescLabel->setObjectName("aDescLabel");
+
+        addFormLayout->setWidget(10, QFormLayout::LabelRole, aDescLabel);
+
+        aDesc = new QPlainTextEdit(cardAdd);
+        aDesc->setObjectName("aDesc");
+        aDesc->setMinimumSize(QSize(0, 64));
+        aDesc->setMaximumSize(QSize(16777215, 64));
+        aDesc->setTabChangesFocus(true);
+
+        addFormLayout->setWidget(10, QFormLayout::FieldRole, aDesc);
 
 
         addLayout->addLayout(addFormLayout);
@@ -1350,6 +1462,22 @@ public:
         kpiTitle4->setText(QCoreApplication::translate("hackathon", "Comp\303\251titions en cours", nullptr));
         kpiCours->setText(QCoreApplication::translate("hackathon", "0", nullptr));
         lblList->setText(QCoreApplication::translate("hackathon", "\360\237\223\213  Liste des comp\303\251titions", nullptr));
+#if QT_CONFIG(tooltip)
+        btnConflits->setToolTip(QCoreApplication::translate("hackathon", "V\303\251rifier les conflits de planning : m\303\252me salle ou m\303\252me jury sur des dates qui se chevauchent", nullptr));
+#endif // QT_CONFIG(tooltip)
+        btnConflits->setText(QCoreApplication::translate("hackathon", "\342\234\205  Conflits : 0", nullptr));
+#if QT_CONFIG(tooltip)
+        btnPublications->setToolTip(QCoreApplication::translate("hackathon", "G\303\251n\303\251rer la brochure (PDF) et la publicit\303\251 (image) de la comp\303\251tition s\303\251lectionn\303\251e", nullptr));
+#endif // QT_CONFIG(tooltip)
+        btnPublications->setText(QCoreApplication::translate("hackathon", "\360\237\223\243  Publications", nullptr));
+#if QT_CONFIG(tooltip)
+        btnExportPdf->setToolTip(QCoreApplication::translate("hackathon", "Exporter la liste affich\303\251e en PDF", nullptr));
+#endif // QT_CONFIG(tooltip)
+        btnExportPdf->setText(QCoreApplication::translate("hackathon", "\342\254\207  PDF", nullptr));
+#if QT_CONFIG(tooltip)
+        btnExportExcel->setToolTip(QCoreApplication::translate("hackathon", "Exporter la liste affich\303\251e en Excel (.xlsx)", nullptr));
+#endif // QT_CONFIG(tooltip)
+        btnExportExcel->setText(QCoreApplication::translate("hackathon", "\342\254\207  Excel", nullptr));
         search->setPlaceholderText(QCoreApplication::translate("hackathon", "\360\237\224\215  Rechercher une comp\303\251tition\342\200\246", nullptr));
         fStatutLabel->setText(QCoreApplication::translate("hackathon", "Statut", nullptr));
         fThemeLabel->setText(QCoreApplication::translate("hackathon", "Th\303\250me", nullptr));
@@ -1388,6 +1516,10 @@ public:
         dMode->setText(QCoreApplication::translate("hackathon", "-", nullptr));
         dMaxLabel->setText(QCoreApplication::translate("hackathon", "\360\237\221\245  \303\211quipes max", nullptr));
         dMax->setText(QCoreApplication::translate("hackathon", "-", nullptr));
+        dSalleLabel->setText(QCoreApplication::translate("hackathon", "\360\237\223\215  Salle", nullptr));
+        dSalle->setText(QCoreApplication::translate("hackathon", "-", nullptr));
+        dJuryLabel->setText(QCoreApplication::translate("hackathon", "\360\237\247\221\342\200\215\342\232\226\357\270\217  Jury", nullptr));
+        dJury->setText(QCoreApplication::translate("hackathon", "-", nullptr));
         btnDetails->setText(QCoreApplication::translate("hackathon", "Voir les d\303\251tails  \342\206\222", nullptr));
         lblAdd->setText(QCoreApplication::translate("hackathon", "\357\274\213  Ajouter une comp\303\251tition", nullptr));
         aIdLabel->setText(QCoreApplication::translate("hackathon", "ID", nullptr));
@@ -1400,6 +1532,10 @@ public:
         aModeLabel->setText(QCoreApplication::translate("hackathon", "Mode", nullptr));
         aMaxLabel->setText(QCoreApplication::translate("hackathon", "\303\211quipes max", nullptr));
         aStatutLabel->setText(QCoreApplication::translate("hackathon", "Statut", nullptr));
+        aSalleLabel->setText(QCoreApplication::translate("hackathon", "Salle", nullptr));
+        aJuryLabel->setText(QCoreApplication::translate("hackathon", "Jury", nullptr));
+        aDescLabel->setText(QCoreApplication::translate("hackathon", "Description", nullptr));
+        aDesc->setPlaceholderText(QCoreApplication::translate("hackathon", "Quelques mots sur la comp\303\251tition", nullptr));
         aErr->setText(QString());
         btnSave->setText(QCoreApplication::translate("hackathon", "Enregistrer", nullptr));
         btnClear->setText(QCoreApplication::translate("hackathon", "Effacer", nullptr));

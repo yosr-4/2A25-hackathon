@@ -1109,14 +1109,98 @@ les solutions de demain</string>
                           <number>12</number>
                          </property>
                          <item>
-                          <widget class="QLabel" name="lblList">
-                           <property name="role" stdset="0">
-                            <string notr="true">cardTitle</string>
+                          <layout class="QHBoxLayout" name="listHeadLayout">
+                           <property name="spacing">
+                            <number>8</number>
                            </property>
-                           <property name="text">
-                            <string>📋  Liste des compétitions</string>
-                           </property>
-                          </widget>
+                           <item>
+                            <widget class="QLabel" name="lblList">
+                             <property name="role" stdset="0">
+                              <string notr="true">cardTitle</string>
+                             </property>
+                             <property name="text">
+                              <string>📋  Liste des compétitions</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <spacer name="listHeadSpacer">
+                             <property name="orientation">
+                              <enum>Qt::Horizontal</enum>
+                             </property>
+                             <property name="sizeHint" stdset="0">
+                              <size>
+                               <width>20</width>
+                               <height>20</height>
+                              </size>
+                             </property>
+                            </spacer>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="btnConflits">
+                             <property name="cursor">
+                              <cursorShape>PointingHandCursor</cursorShape>
+                             </property>
+                             <property name="toolTip">
+                              <string>Vérifier les conflits de planning : même salle ou même jury sur des dates qui se chevauchent</string>
+                             </property>
+                             <property name="kind" stdset="0">
+                              <string notr="true">tool</string>
+                             </property>
+                             <property name="text">
+                              <string>✅  Conflits : 0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="btnPublications">
+                             <property name="cursor">
+                              <cursorShape>PointingHandCursor</cursorShape>
+                             </property>
+                             <property name="toolTip">
+                              <string>Générer la brochure (PDF) et la publicité (image) de la compétition sélectionnée</string>
+                             </property>
+                             <property name="kind" stdset="0">
+                              <string notr="true">tool</string>
+                             </property>
+                             <property name="text">
+                              <string>📣  Publications</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="btnExportPdf">
+                             <property name="cursor">
+                              <cursorShape>PointingHandCursor</cursorShape>
+                             </property>
+                             <property name="toolTip">
+                              <string>Exporter la liste affichée en PDF</string>
+                             </property>
+                             <property name="kind" stdset="0">
+                              <string notr="true">tool</string>
+                             </property>
+                             <property name="text">
+                              <string>⬇  PDF</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="btnExportExcel">
+                             <property name="cursor">
+                              <cursorShape>PointingHandCursor</cursorShape>
+                             </property>
+                             <property name="toolTip">
+                              <string>Exporter la liste affichée en Excel (.xlsx)</string>
+                             </property>
+                             <property name="kind" stdset="0">
+                              <string notr="true">tool</string>
+                             </property>
+                             <property name="text">
+                              <string>⬇  Excel</string>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
                          </item>
                          <item>
                           <layout class="QHBoxLayout" name="filterLayout" stretch="2,1,1,1">
@@ -1345,7 +1429,7 @@ les solutions de demain</string>
                         <x>0</x>
                         <y>0</y>
                         <width>330</width>
-                        <height>1260</height>
+                        <height>1480</height>
                        </rect>
                       </property>
                       <property name="minimumSize">
@@ -1550,6 +1634,34 @@ les solutions de demain</string>
                               </property>
                              </widget>
                             </item>
+                            <item row="5" column="0">
+                             <widget class="QLabel" name="dSalleLabel">
+                              <property name="text">
+                               <string>📍  Salle</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item row="5" column="1">
+                             <widget class="QLabel" name="dSalle">
+                              <property name="text">
+                               <string>-</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item row="6" column="0">
+                             <widget class="QLabel" name="dJuryLabel">
+                              <property name="text">
+                               <string>🧑‍⚖️  Jury</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item row="6" column="1">
+                             <widget class="QLabel" name="dJury">
+                              <property name="text">
+                               <string>-</string>
+                              </property>
+                             </widget>
+                            </item>
                            </layout>
                           </item>
                           <item>
@@ -1740,6 +1852,69 @@ les solutions de demain</string>
                               </property>
                               <property name="minimumContentsLength">
                                <number>8</number>
+                              </property>
+                             </widget>
+                            </item>
+                            <item row="8" column="0">
+                             <widget class="QLabel" name="aSalleLabel">
+                              <property name="text">
+                               <string>Salle</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item row="8" column="1">
+                             <widget class="QComboBox" name="aSalle">
+                              <property name="sizeAdjustPolicy">
+                               <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+                              </property>
+                              <property name="minimumContentsLength">
+                               <number>8</number>
+                              </property>
+                             </widget>
+                            </item>
+                            <item row="9" column="0">
+                             <widget class="QLabel" name="aJuryLabel">
+                              <property name="text">
+                               <string>Jury</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item row="9" column="1">
+                             <widget class="QComboBox" name="aJury">
+                              <property name="sizeAdjustPolicy">
+                               <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+                              </property>
+                              <property name="minimumContentsLength">
+                               <number>8</number>
+                              </property>
+                             </widget>
+                            </item>
+                            <item row="10" column="0">
+                             <widget class="QLabel" name="aDescLabel">
+                              <property name="text">
+                               <string>Description</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item row="10" column="1">
+                             <widget class="QPlainTextEdit" name="aDesc">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>64</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>16777215</width>
+                                <height>64</height>
+                               </size>
+                              </property>
+                              <property name="tabChangesFocus">
+                               <bool>true</bool>
+                              </property>
+                              <property name="placeholderText">
+                               <string>Quelques mots sur la compétition</string>
                               </property>
                              </widget>
                             </item>
