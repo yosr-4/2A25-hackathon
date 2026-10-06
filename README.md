@@ -5,7 +5,7 @@ Application de bureau **C++ / Qt 6** de gestion de hackathon. Cette version int�
 | Module | Auteur | Contenu |
 |---|---|---|
 | **Gestion des Compétitions** | Yosr | Page de connexion, CRUD des compétitions, filtres, détection des conflits de planning (salle / jury), export PDF et Excel (.xlsx), brochure et publicité. Données : `competitions.json`. |
-| **Gestion des Employés** | Firas | CRUD des employés, recherche, tri, statistiques, export PDF et Excel (.csv), suivi de la charge de travail avec alertes, affectation intelligente des employés aux tâches, rééquilibrage automatique. Données : base SQLite `hacktime_employes.db`. |
+| **Gestion des Employés** | mohamed | CRUD des employés, recherche, tri, statistiques, export PDF et Excel (.csv), suivi de la charge de travail avec alertes, affectation intelligente des employés aux tâches, rééquilibrage automatique. Données : base SQLite `hacktime_employes.db`. |
 
 Après la page de connexion, le bouton **« 💼 Employés »** de la barre latérale ouvre le module Employés ; le bouton **« Compétitions »** de la barre latérale du module Employés ramène au module Compétitions.
 
