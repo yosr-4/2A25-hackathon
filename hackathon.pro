@@ -17,7 +17,8 @@ SOURCES += \
     employe.cpp \
     gestionemployes.cpp \
     statswidget.cpp \
-    tache.cpp
+    tache.cpp \
+    mainwindow.cpp
 
 HEADERS += \
     competition.h \
@@ -32,11 +33,13 @@ HEADERS += \
     employe.h \
     gestionemployes.h \
     statswidget.h \
-    tache.h
+    tache.h \
+    mainwindow.h
 
 FORMS += \
     hackathon.ui \
-    gestionemployes.ui
+    gestionemployes.ui \
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
